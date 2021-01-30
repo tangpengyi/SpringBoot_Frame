@@ -17,4 +17,8 @@ public interface UserMapper {
     public List<User> list();
 
     public User login(String account);
+
+    public List<String> findRolesByUserAccount(String account);
+
+    public List<String> findPermissionByUserAccount(String account);
 }

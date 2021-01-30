@@ -4,14 +4,18 @@ import com.tpy.jj.dao.UserMapper;
 import com.tpy.jj.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Slf4j
 public class CustomerRealm extends AuthorizingRealm {
@@ -26,7 +30,6 @@ public class CustomerRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        System.out.println("执行授权逻辑");
 
         //授权代码
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
@@ -34,10 +37,11 @@ public class CustomerRealm extends AuthorizingRealm {
         Subject subject = SecurityUtils.getSubject();
         String principal =(String) subject.getPrincipal();
 
-        //从数据库获取权限字符串
-        String str = "user:list";
-        info.addStringPermission(str);
+        List<String> permissions = userMapper.findPermissionByUserAccount(principal);
+        List<String> roles = userMapper.findRolesByUserAccount(principal);
 
+        info.addStringPermissions(permissions);
+        info.addRoles(roles);
         return info;
     }
 
@@ -52,7 +56,7 @@ public class CustomerRealm extends AuthorizingRealm {
 
         String principal = (String) token.getPrincipal();
         User login = userMapper.login(principal);
-        log.info("执行登录操作");
+
         if(login == null){
             return null;
         }

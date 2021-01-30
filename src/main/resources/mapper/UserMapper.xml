@@ -12,6 +12,24 @@
         <result column="create_time" property="create_time"/>
     </resultMap>
 
+    <select id="findPermissionByUserAccount" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT r.role_value
+        FROM sys_user u
+        LEFT JOIN user_role ur ON u.`id` = ur.`user_id`
+        LEFT JOIN sys_roles r ON ur.`role_id` = r.id
+        LEFT JOIN role_permission rp ON r.`id` = rp.`role_id`
+        LEFT JOIN sys_permission p ON rp.`permission_id` = p.`id`
+        WHERE u.`account` = #{account}
+    </select>
+
+    <select id="findRolesByUserAccount" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT r.role_value
+        FROM sys_user u
+        LEFT JOIN user_role ur ON u.`id` = ur.`user_id`
+        LEFT JOIN sys_roles r ON ur.`role_id` = r.id
+        WHERE u.`account` = #{account}
+    </select>
+
     <select id="login" parameterType="java.lang.String" resultMap="UserMap">
         select id,
               username,

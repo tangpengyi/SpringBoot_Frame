@@ -12,10 +12,7 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 @Service
@@ -49,5 +46,15 @@ public class UserServiceImpl implements UserService {
         UsernamePasswordToken token = new UsernamePasswordToken(login.getAccount(), login.getPwd());
         subject.login(token);
         return null;
+    }
+
+    @Override
+    public List<String> getRoleByUserAccount(String accout) {
+        return userMapper.findRolesByUserAccount(accout);
+    }
+
+    @Override
+    public List<String> findPermissionByUserAccount(String accout) {
+        return userMapper.findPermissionByUserAccount(accout);
     }
 }
